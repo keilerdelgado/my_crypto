@@ -3,9 +3,14 @@ const Websocket = require('ws')
 const P2P_PORT = process.env.P2P_PORT || 5001
 const peers = process.env.PEERS ? process.env.PEERS.split(',') : []
 //HTTP_PORT=3002 P2P_PORT=5002 PEERS=ws://localhost:5001 npm run dev
+const MESSAGE_TYPES = {
+    chain: 'CHAIN',
+    transaction: 'TRANSACTION'
+}
 class P2pServer {
-    constructor(blockchain){
+    constructor(blockchain,transactionPool){
         this.blockchain = blockchain
+        this.transactionPool = transactionPool
         this.sockets = []
     }
     listen() {
@@ -35,18 +40,42 @@ class P2pServer {
     messageHandler(socket){
         socket.on('message',message => {
             const data = JSON.parse(message)
-            this.blockchain.replaceChain(data)
+            console.log(data)
+            switch (data.type) {
+                case MESSAGE_TYPES.chain:
+                    this.blockchain.replaceChain(data.chain)
+                    break;
+                case MESSAGE_TYPES.transaction:
+                    this.transactionPool.updateOrAddTransaction(data.transaction)
+                    break
+                default:
+                    break;
+            }
         })
     }
 
+    sendTransaction(socket,transaction){
+        socket.send(JSON.stringify({
+            type:MESSAGE_TYPES.transaction,
+            transaction
+        }))
+    }
+
     sendChain(socket){
-        socket.send(JSON.stringify(this.blockchain.chain))
+        socket.send(JSON.stringify({
+            type: MESSAGE_TYPES.chain,
+            chain: this.blockchain.chain
+        }))
     }
     
     syncChains(){
         this.sockets.forEach(socket => {
             this.sendChain(socket)
         })
+    }
+
+    broadcastTransaction(transaction){
+        this.sockets.forEach(socket => this.sendTransaction(socket))
     }
 }
 
