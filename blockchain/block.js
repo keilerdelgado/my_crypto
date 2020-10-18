@@ -20,7 +20,7 @@ class Block {
             Nonce     : ${this.nonce}
             Difficulty: ${this.difficulty}
             Data      : ${this.data}
-        `;
+        `
     }
 
     static genesis(){
@@ -49,7 +49,7 @@ class Block {
 
     static blockHash(block){
         const { timestamp, lastHash, data, nonce, difficulty } = block
-        return Block.hash(timestamp,lastHash,data,nonce, difficulty)
+        return Block.hash(timestamp, lastHash, data, nonce, difficulty)
     }
 
     static adjustDifficulty(lastBlock, currentTime){

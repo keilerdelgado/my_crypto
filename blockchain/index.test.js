@@ -36,6 +36,6 @@ describe('Blockchain',()=>{
     it('not replace chain if new <= chain', ()=>{
         bc.addBlock('foo')
         bc.replaceChain(bc2.chain)
-        expect(bc.chain).not.toEqual(bc2.chains)
+        expect(bc.chain).not.toEqual(bc2.chain)
     })
 })

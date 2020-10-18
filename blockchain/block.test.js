@@ -2,11 +2,13 @@ const Block = require('./block');
 
 describe('Block',()=>{
     let data, lastBlock, block;
+    //antes de correr cualquiera de los unit test corre esta funcion
     beforeEach(()=>{
         data = 'bar'
         lastBlock = Block.genesis();
         block = Block.mineBlock(lastBlock,data)
     })
+    //unit tests
     it('sets the `data` to match the input',()=>{
         expect(block.data).toEqual(data);
     })
